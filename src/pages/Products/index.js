@@ -10,7 +10,7 @@ import ProductCard from "../../components/Card";
 function Products(props) {
   const [categories, setCategories] = useState([]);
   const [list, setList] = useState([]);
-  const [category, setCategory] = useState([]);
+  const [category, setCategory] = useState("All");
 
   useEffect(() => {
     getCategories().then((data) => {
