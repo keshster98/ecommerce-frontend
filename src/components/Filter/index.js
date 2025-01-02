@@ -1,4 +1,3 @@
-import * as React from "react";
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 
 function Filter(props) {
