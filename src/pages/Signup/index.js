@@ -11,6 +11,7 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Header from "../../components/Header";
 import { signup } from "../../utils/api_signup";
+import { validateEmail } from "../../utils/email";
 import { toast } from "sonner";
 
 function Signup() {
@@ -23,7 +24,10 @@ function Signup() {
   const handleSignupFormSubmit = async (event) => {
     event.preventDefault();
 
-    if (confirmPassword !== password) {
+    if (!validateEmail(email)) {
+      toast.error("Please enter a valid email address!");
+      navigate("/signup");
+    } else if (confirmPassword !== password) {
       toast.error("Your password does not match, try again");
       navigate("/signup");
     } else {
@@ -70,6 +74,7 @@ function Signup() {
         </Typography>
         <TextField
           fullWidth
+          type="password"
           value={confirmPassword}
           onChange={(event) => setConfirmPassword(event.target.value)}
         />

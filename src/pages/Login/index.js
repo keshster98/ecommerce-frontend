@@ -11,6 +11,7 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Header from "../../components/Header";
 import { login } from "../../utils/api_login";
+import { validateEmail } from "../../utils/email";
 import { toast } from "sonner";
 
 function Signup() {
@@ -21,12 +22,17 @@ function Signup() {
   const handleLoginFormSubmit = async (event) => {
     event.preventDefault();
 
-    const verifyUser = await login(email, password);
+    if (!validateEmail(email)) {
+      toast.error("Please enter a valid email address!");
+      navigate("/login");
+    } else {
+      const verifyUser = await login(email, password);
 
-    if (verifyUser) {
-      toast.success("User has been logged in successfully!");
-      console.log(verifyUser);
-      navigate("/");
+      if (verifyUser) {
+        toast.success("User has been logged in successfully!");
+        console.log(verifyUser);
+        navigate("/");
+      }
     }
   };
 
