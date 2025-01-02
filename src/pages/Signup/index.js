@@ -18,16 +18,22 @@ function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSignupFormSubmit = async (event) => {
     event.preventDefault();
 
-    const newUser = await signup(name, email, password);
+    if (confirmPassword !== password) {
+      toast.error("Your password does not match, try again");
+      navigate("/signup");
+    } else {
+      const newUser = await signup(name, email, password);
 
-    if (newUser) {
-      toast.success("User has been registered successfully!");
-      console.log(newUser);
-      navigate("/");
+      if (newUser) {
+        toast.success("User has been registered successfully!");
+        console.log(newUser);
+        navigate("/");
+      }
     }
   };
 
@@ -55,8 +61,17 @@ function Signup() {
         </Typography>
         <TextField
           fullWidth
+          type="password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
+        />
+        <Typography variant="h6" component="h6" sx={{ mt: 5 }}>
+          Confirm Password
+        </Typography>
+        <TextField
+          fullWidth
+          value={confirmPassword}
+          onChange={(event) => setConfirmPassword(event.target.value)}
         />
       </CardContent>
       <CardActions>
@@ -64,7 +79,9 @@ function Signup() {
           variant="contained"
           sx={{ ml: 1, mr: 1, mb: 2 }}
           fullWidth
-          disabled={!name || !email || !password ? true : false}
+          disabled={
+            !name || !email || !password || !confirmPassword ? true : false
+          }
           onClick={handleSignupFormSubmit}
         >
           Sign Up

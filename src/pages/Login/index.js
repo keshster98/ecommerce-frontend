@@ -24,7 +24,7 @@ function Signup() {
     const verifyUser = await login(email, password);
 
     if (verifyUser) {
-      toast.success("User has been registered successfully!");
+      toast.success("User has been logged in successfully!");
       console.log(verifyUser);
       navigate("/");
     }
@@ -46,6 +46,7 @@ function Signup() {
         </Typography>
         <TextField
           fullWidth
+          type="password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
         />
