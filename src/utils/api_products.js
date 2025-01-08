@@ -2,7 +2,7 @@ import axios from "axios";
 import { API_URL } from "../constants";
 import { toast } from "sonner";
 
-// Get all products
+// Get all products (public data)
 export const getProducts = async (category = "", page = 1) => {
   try {
     const response = await axios.get(
@@ -14,7 +14,7 @@ export const getProducts = async (category = "", page = 1) => {
   }
 };
 
-// Get a single product
+// Get a single product (public data)
 export const getProduct = async (_id) => {
   try {
     const response = await axios.get(API_URL + "/products/" + _id);
@@ -24,46 +24,73 @@ export const getProduct = async (_id) => {
   }
 };
 
-// Add new product
-export const addNewProduct = async (name, description, price, category) => {
+// Add new product (admin api)
+export const addNewProduct = async (
+  name,
+  description,
+  price,
+  category,
+  token
+) => {
   try {
-    const response = await axios.post(API_URL + "/products", {
-      name: name,
-      description: description,
-      price: price,
-      category: category,
-    });
+    const response = await axios.post(
+      API_URL + "/products",
+      {
+        name: name,
+        description: description,
+        price: price,
+        category: category,
+      },
+      {
+        headers: {
+          Authorization: "Bearer " + token, // Bearer needs a space after as token is long without spaces
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     toast.error(error.response.data.error);
   }
 };
 
-// Update product
+// Update product (admin api)
 export const updateProduct = async (
   _id,
   name,
   description,
   price,
-  category
+  category,
+  token
 ) => {
   try {
-    const response = await axios.put(API_URL + "/products/" + _id, {
-      name: name,
-      description: description,
-      price: price,
-      category: category,
-    });
+    const response = await axios.put(
+      API_URL + "/products/" + _id,
+      {
+        name: name,
+        description: description,
+        price: price,
+        category: category,
+      },
+      {
+        headers: {
+          Authorization: "Bearer " + token, // Bearer needs a space after as token is long without spaces
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     toast.error(error.response.data.error);
   }
 };
 
-// Delete product
-export const deleteProduct = async (id) => {
+// Delete product (admin api)
+export const deleteProduct = async (id, token) => {
   try {
-    const response = await axios.delete(API_URL + "/products/" + id);
+    const response = await axios.delete(API_URL + "/products/" + id, {
+      headers: {
+        Authorization: "Bearer " + token, // Bearer needs a space after as token is long without spaces
+      },
+    });
     return response.data;
   } catch (error) {
     toast.error(error.response.data.error);

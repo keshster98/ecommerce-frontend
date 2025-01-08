@@ -5,6 +5,8 @@ import Filter from "../../components/Filter";
 import ProductCard from "../../components/Card";
 import { getProducts } from "../../utils/api_products";
 import { getCategories } from "../../utils/api_categories";
+import { useCookies } from "react-cookie";
+import { isAdmin } from "../../utils/api_auth";
 import { Typography, Box, Container, Button } from "@mui/material";
 import { ArrowRight, ArrowLeft } from "@mui/icons-material";
 import { green } from "@mui/material/colors";
@@ -14,6 +16,7 @@ function Products() {
   const [categories, setCategories] = useState([]);
   const [list, setList] = useState([]);
   const [category, setCategory] = useState("All");
+  const [cookies] = useCookies(["currentUser"]);
 
   useEffect(() => {
     getCategories().then((data) => {
@@ -51,15 +54,21 @@ function Products() {
         >
           Products
         </Typography>
-        <Button
-          LinkComponent={Link}
-          to="/products/new"
-          variant="contained"
-          color="success"
-          sx={{ mt: 2, textTransform: "none", backgroundColor: green["A700"] }}
-        >
-          Add New
-        </Button>
+        {isAdmin(cookies) ? (
+          <Button
+            LinkComponent={Link}
+            to="/products/new"
+            variant="contained"
+            color="success"
+            sx={{
+              mt: 2,
+              textTransform: "none",
+              backgroundColor: green["A700"],
+            }}
+          >
+            Add New
+          </Button>
+        ) : null}
       </Box>
       <Box sx={{ mb: 5 }}>
         <Filter

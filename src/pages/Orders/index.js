@@ -16,29 +16,33 @@ import {
 import Header from "../../components/Header";
 import { toast } from "sonner";
 import { getOrders, updateOrder, deleteOrder } from "../../utils/api_orders";
+import { useCookies } from "react-cookie";
+import { isAdmin, getUserToken } from "../../utils/api_auth";
 
 function Orders() {
   const [orders, setOrders] = useState([]);
+  const [cookies] = useCookies(["currentUser"]);
+  const token = getUserToken(cookies);
 
   useEffect(() => {
-    getOrders().then((data) => {
+    getOrders(token).then((data) => {
       setOrders(data);
     });
-  }, []);
+  }, [token]);
 
   const handleStatusUpdate = async (_id, status) => {
-    const updatedOrder = await updateOrder(_id, status);
+    const updatedOrder = await updateOrder(_id, status, token);
     if (updatedOrder) {
-      const updatedOrders = await getOrders();
+      const updatedOrders = await getOrders(token);
       setOrders(updatedOrders);
       toast.success("Order status has been updated!");
     }
   };
 
   const handleOrderDelete = async (_id) => {
-    const response = await deleteOrder(_id);
+    const response = await deleteOrder(_id, token);
     if (response) {
-      const updatedOrders = await getOrders();
+      const updatedOrders = await getOrders(token);
       setOrders(updatedOrders);
       toast.success("Order has been deleted");
     }
@@ -60,7 +64,7 @@ function Orders() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {orders.length > 0 ? (
+            {orders && orders.length > 0 ? (
               orders.map((order) => (
                 <TableRow key={order._id}>
                   <TableCell>
@@ -78,6 +82,7 @@ function Orders() {
                     <FormControl fullWidth>
                       <Select
                         value={order.status}
+                        disabled={!isAdmin(cookies) ? true : false}
                         onChange={(event) => {
                           handleStatusUpdate(order._id, event.target.value);
                         }}
@@ -93,7 +98,7 @@ function Orders() {
                     {order.paid_at ? order.paid_at : "Not Paid"}
                   </TableCell>
                   <TableCell>
-                    {order.status === "pending" ? (
+                    {isAdmin(cookies) && order.status === "pending" ? (
                       <Button
                         variant="contained"
                         color="error"

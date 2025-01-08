@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import * as React from "react";
 import { Container } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -10,12 +11,13 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Header from "../../components/Header";
-import { login } from "../../utils/api_login";
+import { login } from "../../utils/api_auth";
 import { validateEmail } from "../../utils/email";
 import { toast } from "sonner";
 
 function Signup() {
   const navigate = useNavigate();
+  const [cookies, setCookie] = useCookies(["currentUser"]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -29,6 +31,10 @@ function Signup() {
       const verifyUser = await login(email, password);
 
       if (verifyUser) {
+        // set cookies
+        setCookie("currentUser", verifyUser, {
+          maxAge: 60 * 60 * 24 * 30, // second * minutes * hours * days
+        });
         toast.success("User has been logged in successfully!");
         console.log(verifyUser);
         navigate("/");
@@ -65,13 +71,13 @@ function Signup() {
           disabled={!email || !password ? true : false}
           onClick={handleLoginFormSubmit}
         >
-          Sign Up
+          Login
         </Button>
       </CardActions>
     </React.Fragment>
   );
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth="sm">
       <Header title="Login to Your Account" />
       <Box sx={{ minWidth: 275 }}>
         <Card variant="outlined">{card}</Card>

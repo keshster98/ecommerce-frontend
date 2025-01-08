@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { deleteProduct, getProducts } from "../../utils/api_products";
 import { getCategories } from "../../utils/api_categories";
+import { useCookies } from "react-cookie";
+import { isAdmin, getUserToken } from "../../utils/api_auth";
 import { green, deepOrange, indigo, red, blue } from "@mui/material/colors";
 import {
   Stack,
@@ -16,6 +18,8 @@ import { toast } from "sonner";
 
 function ProductCard(props) {
   const { products, setProducts, setCategories, category, page } = props; // setProducts, category, page
+  const [cookies] = useCookies(["currentUser"]);
+  const token = getUserToken(cookies);
   const addToCart = (product) => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     const duplicateProduct = cart.find((inCart) => inCart._id === product._id);
@@ -40,7 +44,7 @@ function ProductCard(props) {
       "Are you sure you want to delete this product?"
     );
     if (confirmed) {
-      const deleted = await deleteProduct(id);
+      const deleted = await deleteProduct(id, token);
       if (deleted) {
         // get the latest products data from the API again so that it shows on frontend side
         const latestProducts = await getProducts(category, page);
@@ -112,34 +116,38 @@ function ProductCard(props) {
               <CardActions
                 sx={{ justifyContent: "space-between", marginLeft: 1, mb: 2 }}
               >
-                <Button
-                  LinkComponent={Link}
-                  to={`/products/${product._id}/edit`}
-                  variant="contained"
-                  size="medium"
-                  sx={{
-                    backgroundColor: indigo["A200"],
-                    borderRadius: "50px",
-                    textTransform: "none", // Because default style for MUI buttons include textTransform: "uppercase"
-                  }}
-                >
-                  Edit
-                </Button>
-                <Button
-                  variant="contained"
-                  size="medium"
-                  sx={{
-                    backgroundColor: red[500],
-                    marginRight: 1,
-                    borderRadius: "50px",
-                    textTransform: "none", // Because default style for MUI buttons include textTransform: "uppercase"
-                  }}
-                  onClick={() => {
-                    handleDelete(product._id);
-                  }}
-                >
-                  Delete
-                </Button>
+                {isAdmin(cookies) ? (
+                  <>
+                    <Button
+                      LinkComponent={Link}
+                      to={`/products/${product._id}/edit`}
+                      variant="contained"
+                      size="medium"
+                      sx={{
+                        backgroundColor: indigo["A200"],
+                        borderRadius: "50px",
+                        textTransform: "none", // Because default style for MUI buttons include textTransform: "uppercase"
+                      }}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="contained"
+                      size="medium"
+                      sx={{
+                        backgroundColor: red[500],
+                        marginRight: 1,
+                        borderRadius: "50px",
+                        textTransform: "none", // Because default style for MUI buttons include textTransform: "uppercase"
+                      }}
+                      onClick={() => {
+                        handleDelete(product._id);
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </>
+                ) : null}
               </CardActions>
             </Card>
           </Grid2>

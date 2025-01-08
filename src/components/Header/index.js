@@ -1,14 +1,25 @@
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import { Typography, Divider, Box, Button, Stack } from "@mui/material";
+import { isUserLoggedIn } from "../../utils/api_auth";
 
 function Header(props) {
   const { title = "Welcome To My Store" } = props;
+  const navigate = useNavigate();
+  const [cookies, setCookie, removeCookie] = useCookies(["currentUser"]);
   const location = useLocation();
   const isHomePage = location.pathname === "/";
   const isCartPage = location.pathname === "/cart";
   const isOrdersPage = location.pathname === "/orders";
   const isLoginPage = location.pathname === "/login";
   const isSignUpPage = location.pathname === "/signup";
+
+  const handleLogout = () => {
+    // clear the cookies
+    removeCookie("currentUser");
+    // redirect the user back to login page
+    navigate("/");
+  };
 
   return (
     <Box sx={{ textAlign: "center", pt: 5 }}>
@@ -44,22 +55,37 @@ function Header(props) {
         >
           Orders
         </Button>
-        <Button
-          variant={isLoginPage ? "outlined" : "contained"}
-          LinkComponent={Link}
-          to="/login"
-          sx={{ textTransform: "none" }}
-        >
-          Login
-        </Button>
-        <Button
-          variant={isSignUpPage ? "outlined" : "contained"}
-          LinkComponent={Link}
-          to="/signup"
-          sx={{ textTransform: "none" }}
-        >
-          Sign Up
-        </Button>
+        {isUserLoggedIn(cookies) ? (
+          <Button
+            variant={isLoginPage ? "outlined" : "contained"}
+            LinkComponent={Link}
+            sx={{ textTransform: "none" }}
+            onClick={() => {
+              handleLogout();
+            }}
+          >
+            Logout
+          </Button>
+        ) : (
+          <>
+            <Button
+              variant={isLoginPage ? "outlined" : "contained"}
+              LinkComponent={Link}
+              to="/login"
+              sx={{ textTransform: "none" }}
+            >
+              Login
+            </Button>
+            <Button
+              variant={isSignUpPage ? "outlined" : "contained"}
+              LinkComponent={Link}
+              to="/signup"
+              sx={{ textTransform: "none" }}
+            >
+              Sign Up
+            </Button>
+          </>
+        )}
       </Stack>
       <Divider sx={{ pt: 3, mb: 3, borderBottomWidth: 3 }}></Divider>
     </Box>

@@ -6,9 +6,13 @@ import { Container, Typography, Box, TextField, Button } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import { toast } from "sonner";
+import { useCookies } from "react-cookie";
+import { getUserToken } from "../../utils/api_auth";
 
 function ProductAddNew() {
   const navigate = useNavigate();
+  const [cookies] = useCookies(["currentUser"]);
+  const token = getUserToken(cookies);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
@@ -23,7 +27,8 @@ function ProductAddNew() {
       name,
       description,
       price,
-      category
+      category,
+      token
     );
 
     // Check if the newProductData exists or not

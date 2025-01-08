@@ -8,10 +8,14 @@ import CardContent from "@mui/material/CardContent";
 import Header from "../../components/Header";
 import { toast } from "sonner";
 import { updateProduct, getProduct } from "../../utils/api_products";
+import { useCookies } from "react-cookie";
+import { getUserToken } from "../../utils/api_auth";
 
 function ProductEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [cookies] = useCookies(["currentUser"]);
+  const token = getUserToken(cookies);
   const [loading, setLoading] = useState(true);
   const [originalData, setOriginalData] = useState();
   const [name, setName] = useState("");
@@ -43,7 +47,8 @@ function ProductEdit() {
         name,
         description,
         price,
-        category
+        category,
+        token
       );
 
       if (updatedProduct) {

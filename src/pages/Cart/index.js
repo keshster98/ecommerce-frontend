@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import {
   Table,
@@ -14,7 +13,6 @@ import {
   Button,
 } from "@mui/material";
 import { red } from "@mui/material/colors";
-import { toast } from "sonner";
 
 function Cart() {
   const [cartList, setCartList] = useState(
