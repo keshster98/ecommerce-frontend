@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   Typography,
@@ -20,17 +21,34 @@ import { toast } from "sonner";
 import { validateEmail } from "../../utils/email";
 import { createOrder } from "../../utils/api_orders";
 import { useCookies } from "react-cookie";
-import { getUserToken } from "../../utils/api_auth";
+import {
+  getCurrentUser,
+  getUserToken,
+  isUserLoggedIn,
+} from "../../utils/api_auth";
 
 function Checkout() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [cookies] = useCookies(["currentUser"]);
   const token = getUserToken(cookies);
-
+  const currentUser = getCurrentUser(cookies);
+  const [name, setName] = useState(
+    currentUser && currentUser.name ? currentUser.name : ""
+  );
+  const [email, setEmail] = useState(
+    currentUser && currentUser.email ? currentUser.email : ""
+  );
   const cart = getCart();
   const totalPrice = getTotalCartPrice();
+
+  // check if user is logged in or not
+  useEffect(() => {
+    if (!isUserLoggedIn(cookies)) {
+      navigate("/");
+      toast.error("Please login first");
+    }
+  }, [cookies, navigate]);
 
   const doCheckout = async () => {
     // 1. make sure the name and email fields are filled
@@ -78,7 +96,7 @@ function Checkout() {
                 required
                 fullWidth
                 value={email}
-                onChange={(event) => setEmail(event.target.value)}
+                disabled={true}
               />
             </Box>
 

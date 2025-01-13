@@ -2,6 +2,7 @@ import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import { Typography, Divider, Box, Button, Stack } from "@mui/material";
 import { isUserLoggedIn } from "../../utils/api_auth";
+import { clearCart } from "../../utils/api_cart";
 
 function Header(props) {
   const { title = "Welcome To My Store" } = props;
@@ -17,6 +18,8 @@ function Header(props) {
   const handleLogout = () => {
     // clear the cookies
     removeCookie("currentUser");
+    // clears the cart each time the user logs out
+    clearCart();
     // redirect the user back to login page
     navigate("/");
   };

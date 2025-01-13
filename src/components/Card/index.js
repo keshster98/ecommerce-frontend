@@ -11,10 +11,12 @@ import {
   Card,
   CardActions,
   CardContent,
+  CardMedia,
   Chip,
   Grid2,
 } from "@mui/material";
 import { toast } from "sonner";
+import { API_URL } from "../../constants";
 
 function ProductCard(props) {
   const { products, setProducts, setCategories, category, page } = props; // setProducts, category, page
@@ -64,6 +66,12 @@ function ProductCard(props) {
           <Grid2 item size={{ xs: 12, sm: 6, md: 4 }}>
             <Card variant="outlined" sx={{ height: "100%", width: "100%" }}>
               {" "}
+              {product.image ? (
+                <CardMedia
+                  component="img"
+                  image={`${API_URL}/${product.image}`}
+                />
+              ) : null}
               <CardContent>
                 <Typography variant="subtitle1" component="subtitle1">
                   {product.name}
@@ -86,7 +94,7 @@ function ProductCard(props) {
                     }}
                   />
                   <Chip
-                    label={product.category}
+                    label={product.category.name}
                     sx={{
                       backgroundColor: deepOrange[50],
                       color: deepOrange[500],

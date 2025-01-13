@@ -80,35 +80,45 @@ function Orders() {
                   <TableCell>${order.totalPrice.toFixed(2)}</TableCell>
                   <TableCell>
                     <FormControl fullWidth>
-                      <Select
-                        value={order.status}
-                        disabled={!isAdmin(cookies) ? true : false}
-                        onChange={(event) => {
-                          handleStatusUpdate(order._id, event.target.value);
-                        }}
-                      >
-                        <MenuItem value="pending">Pending</MenuItem>
-                        <MenuItem value="paid">Paid</MenuItem>
-                        <MenuItem value="failed">Failed</MenuItem>
-                        <MenuItem value="completed">Completed</MenuItem>
-                      </Select>
+                      {isAdmin(cookies) ? (
+                        order.status === "pending" ? (
+                          <Select value={order.status} disabled={true}>
+                            <MenuItem value="pending">Pending</MenuItem>
+                          </Select>
+                        ) : (
+                          <Select
+                            value={order.status}
+                            onChange={(event) => {
+                              handleStatusUpdate(order._id, event.target.value);
+                            }}
+                          >
+                            <MenuItem value="paid">Paid</MenuItem>
+                            <MenuItem value="failed">Failed</MenuItem>
+                            <MenuItem value="completed">Completed</MenuItem>
+                          </Select>
+                        )
+                      ) : (
+                        order.status
+                      )}
                     </FormControl>
                   </TableCell>
                   <TableCell>
                     {order.paid_at ? order.paid_at : "Not Paid"}
                   </TableCell>
                   <TableCell>
-                    {isAdmin(cookies) && order.status === "pending" ? (
-                      <Button
-                        variant="contained"
-                        color="error"
-                        disabled={order.status !== "pending"}
-                        onClick={() => {
-                          handleOrderDelete(order._id);
-                        }}
-                      >
-                        Delete
-                      </Button>
+                    {isAdmin(cookies) ? (
+                      order.status === "pending" ? (
+                        <Button
+                          variant="contained"
+                          color="error"
+                          disabled={order.status !== "pending"}
+                          onClick={() => {
+                            handleOrderDelete(order._id);
+                          }}
+                        >
+                          Delete
+                        </Button>
+                      ) : null
                     ) : null}
                   </TableCell>
                 </TableRow>

@@ -1,4 +1,5 @@
 import { Container, Typography, TextField, Box, Button } from "@mui/material";
+import { InputLabel, MenuItem, FormControl, Select } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +11,10 @@ import { toast } from "sonner";
 import { updateProduct, getProduct } from "../../utils/api_products";
 import { useCookies } from "react-cookie";
 import { getUserToken } from "../../utils/api_auth";
+import { getCategories } from "../../utils/api_categories";
+import { API_URL } from "../../constants";
+import ButtonUpload from "../../components/ButtonUpload";
+import { uploadImage } from "../../utils/api_image";
 
 function ProductEdit() {
   const { id } = useParams();
@@ -22,6 +27,8 @@ function ProductEdit() {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
   const [category, setCategory] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [image, setImage] = useState("");
 
   useEffect(() => {
     getProduct(id).then((productData) => {
@@ -31,9 +38,16 @@ function ProductEdit() {
       setDescription(productData.description);
       setPrice(productData.price);
       setCategory(productData.category);
+      setImage(productData.image);
       console.log(productData);
     });
   }, [id]);
+
+  useEffect(() => {
+    getCategories().then((data) => {
+      setCategories(data);
+    });
+  }, []);
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
@@ -48,6 +62,7 @@ function ProductEdit() {
         description,
         price,
         category,
+        image,
         token
       );
 
@@ -56,6 +71,13 @@ function ProductEdit() {
         navigate("/");
       }
     }
+  };
+
+  const handleImageUpload = async (files) => {
+    // trigger the upload API
+    const { image_url = "" } = await uploadImage(files[0]);
+    // to set the uploaded image
+    setImage(image_url);
   };
 
   return (
@@ -109,13 +131,56 @@ function ProductEdit() {
                   />
                 </Box>
                 <Box mb={2}>
-                  <TextField
-                    label="Category"
-                    required
-                    fullWidth
-                    value={category}
-                    onChange={(event) => setCategory(event.target.value)}
-                  />
+                  <FormControl sx={{ minWidth: "100%" }}>
+                    <InputLabel id="demo-simple-select-label">
+                      Category
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={category}
+                      label="Category"
+                      onChange={(event) => {
+                        setCategory(event.target.value);
+                      }}
+                      sx={{
+                        width: "100%",
+                      }}
+                    >
+                      {categories.map((category) => {
+                        return (
+                          <MenuItem value={category._id}>
+                            {category.name}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
+                </Box>
+                <Box mb={2}>
+                  {image && image !== "" ? (
+                    <>
+                      <div>
+                        <img
+                          src={`${API_URL}/${image}`}
+                          style={{
+                            width: "100%",
+                            maxWidth: "300px",
+                          }}
+                        />
+                      </div>
+                      <button onClick={() => setImage("")}>Remove</button>
+                    </>
+                  ) : (
+                    <ButtonUpload
+                      onFileUpload={(files) => {
+                        // handleImageUpload
+                        if (files && files[0]) {
+                          handleImageUpload(files);
+                        }
+                      }}
+                    />
+                  )}
                 </Box>
                 <Button
                   variant="contained"
@@ -125,7 +190,8 @@ function ProductEdit() {
                     originalData.name === name &&
                     originalData.description === description &&
                     originalData.price === price &&
-                    originalData.category === category
+                    originalData.category === category &&
+                    originalData.image === image
                       ? true
                       : false
                   }

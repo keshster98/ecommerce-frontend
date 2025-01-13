@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import { addNewProduct } from "../../utils/api_products";
@@ -7,7 +7,10 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import { toast } from "sonner";
 import { useCookies } from "react-cookie";
-import { getUserToken } from "../../utils/api_auth";
+import { getUserToken, isAdmin } from "../../utils/api_auth";
+import ButtonUpload from "../../components/ButtonUpload";
+import { uploadImage } from "../../utils/api_image";
+import { API_URL } from "../../constants";
 
 function ProductAddNew() {
   const navigate = useNavigate();
@@ -17,6 +20,13 @@ function ProductAddNew() {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
   const [category, setCategory] = useState("");
+  const [image, setImage] = useState("");
+
+  useEffect(() => {
+    if (!isAdmin(cookies)) {
+      navigate("/");
+    }
+  }, [cookies, navigate]);
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
@@ -28,6 +38,7 @@ function ProductAddNew() {
       description,
       price,
       category,
+      image,
       token
     );
 
@@ -38,6 +49,13 @@ function ProductAddNew() {
       // Redirect back to homepage
       navigate("/");
     }
+  };
+
+  const handleImageUpload = async (files) => {
+    // trigger the upload API
+    const { image_url = "" } = await uploadImage(files[0]);
+    // to set the uploaded image
+    setImage(image_url);
   };
 
   return (
@@ -83,6 +101,31 @@ function ProductAddNew() {
               value={category}
               onChange={(event) => setCategory(event.target.value)}
             />
+          </Box>
+          <Box mb={2}>
+            {image !== "" ? (
+              <>
+                <div>
+                  <img
+                    src={`${API_URL}/${image}`}
+                    style={{
+                      width: "100%",
+                      maxWidth: "300px",
+                    }}
+                  />
+                </div>
+                <button onClick={() => setImage("")}>Remove</button>
+              </>
+            ) : (
+              <ButtonUpload
+                onFileUpload={(files) => {
+                  // handleImageUpload
+                  if (files && files[0]) {
+                    handleImageUpload(files);
+                  }
+                }}
+              />
+            )}
           </Box>
           <Button
             variant="contained"

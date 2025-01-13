@@ -30,6 +30,7 @@ export const addNewProduct = async (
   description,
   price,
   category,
+  image,
   token
 ) => {
   try {
@@ -40,6 +41,7 @@ export const addNewProduct = async (
         description: description,
         price: price,
         category: category,
+        image: image,
       },
       {
         headers: {
@@ -60,6 +62,7 @@ export const updateProduct = async (
   description,
   price,
   category,
+  image,
   token
 ) => {
   try {
@@ -70,6 +73,7 @@ export const updateProduct = async (
         description: description,
         price: price,
         category: category,
+        image: image,
       },
       {
         headers: {
