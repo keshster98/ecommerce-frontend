@@ -10,6 +10,8 @@ import Orders from "./pages/Orders";
 import Checkout from "./pages/Checkout";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Categories from "./pages/Categories";
+import CategoriesEdit from "./pages/CategoriesEdit";
 
 function App() {
   return (
@@ -27,6 +29,8 @@ function App() {
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/categories/:id/edit" element={<CategoriesEdit />} />
           </Routes>
         </BrowserRouter>
         <Toaster richColors position="top-right" />

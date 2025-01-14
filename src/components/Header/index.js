@@ -1,7 +1,7 @@
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import { Typography, Divider, Box, Button, Stack } from "@mui/material";
-import { isUserLoggedIn } from "../../utils/api_auth";
+import { isUserLoggedIn, isAdmin } from "../../utils/api_auth";
 import { clearCart } from "../../utils/api_cart";
 
 function Header(props) {
@@ -14,6 +14,7 @@ function Header(props) {
   const isOrdersPage = location.pathname === "/orders";
   const isLoginPage = location.pathname === "/login";
   const isSignUpPage = location.pathname === "/signup";
+  const isCategoriesPage = location.pathname === "/categories";
 
   const handleLogout = () => {
     // clear the cookies
@@ -33,62 +34,93 @@ function Header(props) {
       >
         {title}
       </Typography>
-      <Stack flexDirection={"row"} justifyContent={"center"} gap={"10px"}>
-        <Button
-          variant={isHomePage ? "outlined" : "contained"}
-          LinkComponent={Link}
-          to="/"
-          sx={{ textTransform: "none" }}
-        >
-          Home
-        </Button>
-        <Button
-          variant={isCartPage ? "outlined" : "contained"}
-          LinkComponent={Link}
-          to="/cart"
-          sx={{ textTransform: "none" }}
-        >
-          Cart
-        </Button>
-        <Button
-          variant={isOrdersPage ? "outlined" : "contained"}
-          LinkComponent={Link}
-          to="/orders"
-          sx={{ textTransform: "none" }}
-        >
-          Orders
-        </Button>
-        {isUserLoggedIn(cookies) ? (
+
+      <Stack
+        flexDirection={"row"}
+        justifyContent={"space-between"}
+        gap={"10px"}
+      >
+        <Stack className="left" flexDirection={"row"} gap={"10px"}>
           <Button
-            variant={isLoginPage ? "outlined" : "contained"}
+            variant={isHomePage ? "outlined" : "contained"}
             LinkComponent={Link}
+            to="/"
             sx={{ textTransform: "none" }}
-            onClick={() => {
-              handleLogout();
-            }}
           >
-            Logout
+            Home
           </Button>
-        ) : (
-          <>
+          <Button
+            variant={isCartPage ? "outlined" : "contained"}
+            LinkComponent={Link}
+            to="/cart"
+            sx={{ textTransform: "none" }}
+          >
+            Cart
+          </Button>
+          {isUserLoggedIn(cookies) && (
             <Button
-              variant={isLoginPage ? "outlined" : "contained"}
+              variant={isOrdersPage ? "outlined" : "contained"}
               LinkComponent={Link}
-              to="/login"
+              to="/orders"
               sx={{ textTransform: "none" }}
             >
-              Login
+              Orders
             </Button>
+          )}
+          {isAdmin(cookies) && (
             <Button
-              variant={isSignUpPage ? "outlined" : "contained"}
+              variant={isCategoriesPage ? "outlined" : "contained"}
               LinkComponent={Link}
-              to="/signup"
+              to="/categories"
               sx={{ textTransform: "none" }}
             >
-              Sign Up
+              Categories
             </Button>
-          </>
-        )}
+          )}
+        </Stack>
+        <Stack
+          className="right"
+          flexDirection={"row"}
+          alignItems={"center"}
+          gap={"20px"}
+        >
+          {isUserLoggedIn(cookies) ? (
+            <>
+              {" "}
+              <Typography>Current User: {cookies.currentUser.name}</Typography>
+              <Button
+                variant={isLoginPage ? "outlined" : "contained"}
+                LinkComponent={Link}
+                sx={{ textTransform: "none" }}
+                onClick={() => {
+                  handleLogout();
+                }}
+              >
+                Logout
+              </Button>
+            </>
+          ) : (
+            <>
+              {" "}
+              <Button
+                variant={isLoginPage ? "outlined" : "contained"}
+                LinkComponent={Link}
+                to="/login"
+                sx={{ textTransform: "none" }}
+              >
+                Login
+              </Button>
+              <Button
+                variant={isSignUpPage ? "outlined" : "contained"}
+                LinkComponent={Link}
+                to="/signup"
+                sx={{ textTransform: "none", marginRight: "auto" }}
+              >
+                Sign Up
+              </Button>
+            </>
+          )}
+        </Stack>
       </Stack>
       <Divider sx={{ pt: 3, mb: 3, borderBottomWidth: 3 }}></Divider>
     </Box>
