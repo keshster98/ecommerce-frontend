@@ -82,7 +82,7 @@ function Header(props) {
           className="right"
           flexDirection={"row"}
           alignItems={"center"}
-          gap={"20px"}
+          gap={"10px"}
         >
           {isUserLoggedIn(cookies) ? (
             <>
