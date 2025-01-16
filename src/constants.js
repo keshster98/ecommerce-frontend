@@ -3,4 +3,4 @@
 export const API_URL =
   process.env.NODE_ENV === "development"
     ? "http://localhost:5555/api"
-    : "b13-keshen24.mak3r.dev/api";
+    : "http://b13-keshen24.mak3r.dev/api";
