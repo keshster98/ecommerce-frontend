@@ -2,7 +2,17 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import { addNewProduct } from "../../utils/api_products";
-import { Container, Typography, Box, TextField, Button } from "@mui/material";
+import {
+  Container,
+  Typography,
+  Box,
+  TextField,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import { toast } from "sonner";
@@ -11,6 +21,7 @@ import { getUserToken, isAdmin } from "../../utils/api_auth";
 import ButtonUpload from "../../components/ButtonUpload";
 import { uploadImage } from "../../utils/api_image";
 import { API_URL } from "../../constants";
+import { getCategories } from "../../utils/api_categories";
 
 function ProductAddNew() {
   const navigate = useNavigate();
@@ -20,6 +31,7 @@ function ProductAddNew() {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
   const [category, setCategory] = useState("");
+  const [categories, setCategories] = useState([]);
   const [image, setImage] = useState("");
 
   useEffect(() => {
@@ -27,6 +39,12 @@ function ProductAddNew() {
       navigate("/");
     }
   }, [cookies, navigate]);
+
+  useEffect(() => {
+    getCategories().then((data) => {
+      setCategories(data);
+    });
+  }, []);
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
@@ -94,13 +112,27 @@ function ProductAddNew() {
             />
           </Box>
           <Box mb={2}>
-            <TextField
-              label="Category"
-              required
-              fullWidth
-              value={category}
-              onChange={(event) => setCategory(event.target.value)}
-            />
+            <FormControl sx={{ minWidth: "100%" }}>
+              <InputLabel id="demo-simple-select-label">Category</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={category}
+                label="Category"
+                onChange={(event) => {
+                  setCategory(event.target.value);
+                }}
+                sx={{
+                  width: "100%",
+                }}
+              >
+                {categories.map((category) => {
+                  return (
+                    <MenuItem value={category._id}>{category.name}</MenuItem>
+                  );
+                })}
+              </Select>
+            </FormControl>
           </Box>
           <Box mb={2}>
             {image !== "" ? (
