@@ -15,7 +15,9 @@ function Filter(props) {
       >
         <MenuItem value="All">All</MenuItem>
         {categories.map((cat) => (
-          <MenuItem value={cat._id}>{cat.name}</MenuItem>
+          <MenuItem key={cat._id} value={cat._id}>
+            {cat.name}
+          </MenuItem>
         ))}
       </Select>
     </FormControl>
